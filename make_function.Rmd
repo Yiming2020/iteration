@@ -54,12 +54,104 @@ z_scores = function(x) {
 z_scores(x_vec)
 ```
 
-Try my function on some other things
+Try my function on some other things. These should give errors
 
 ```{r error = TRUE}
 z_scores(3) #return NA because sd(3) is NA
 z_scores("my name is jeff") # cannot return anything because those are characters
 z_scores(mycars) #cannot take a mean of a dataset
 z_scores(c(TRUE, TRUE, FALSE, FALSE)) # It works becase R consider them as 1100
+```
+
+## Multiple outputs
+
+```{r}
+mean_and_sd = function(x) {
+  
+  if(!is.numeric(x)){
+    stop("Input must be numeric")
+  }
+  
+  if(length(x) < 3){
+    stop("Inpur must have at least three numbers")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+  
+  list(
+    mean = mean_x,
+    sd = sd_x
+  )
+ 
+}
+
+```
+
+```{r}
+mean_and_sd = function(x) {
+  
+  if(!is.numeric(x)){
+    stop("Input must be numeric")
+  }
+  
+  if(length(x) < 3){
+    stop("Inpur must have at least three numbers")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+  
+  tibble(
+    mean = mean_x,
+    sd = sd_x
+  )
+ 
+}
+```
+
+Check that the function works
+
+```{r}
+x_vec = rnorm(1000)
+mean_and_sd(x_vec)
+```
+
+## multiple inputs
+
+```{r}
+sim_data = 
+  tibble(
+    x = rnorm(n = 100, mean = 4, sd = 3)
+  )
+
+sim_data %>% 
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+  )
+```
+
+I'd like to do this with function
+
+```{r}
+sim_mean_sd = function(sample_size, miu = 3, sigma = 4){
+  sim_data = 
+    tibble(
+    x = rnorm(sample_size, mean = miu, sd = sigma)
+  )
+
+sim_data %>% 
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+  )
+  
+}
+
+sim_mean_sd(100, 6, 3)
+sim_mean_sd(miu = 6, sigma = 7, sample_size = 500) #miu = 6, sigma = 7 rewrite the default numbers
+sim_mean_sd(sample_size = 500)#因为default miu = 3, sigma = 4, 所以function can still work
+
 ```
 

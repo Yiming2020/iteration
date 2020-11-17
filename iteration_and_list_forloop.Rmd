@@ -110,3 +110,16 @@ for (i in 1:4) {
 }
 ```
 
+## Let's try map
+
+```{r}
+output = map(list_norms, mean_and_sd)   # 跟for loop效果一样，格式：map(input, function)
+```
+
+What if you want a different function..?
+
+```{r}
+output = map(list_norms, median)
+output = map(list_norms, IQR)
+```
+

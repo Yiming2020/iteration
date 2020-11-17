@@ -114,12 +114,67 @@ for (i in 1:4) {
 
 ```{r}
 output = map(list_norms, mean_and_sd)   # 跟for loop效果一样，格式：map(input, function)
+output = map(.x = list_norms, ~ mean_and_sd(.x))
 ```
 
 What if you want a different function..?
 
 ```{r}
 output = map(list_norms, median)
-output = map(list_norms, IQR)
+output = map(list_norms, IQR)   # output as list
+```
+
+```{r}
+output = map_dbl(list_norms, median) # output 可以以不同格式输出，lec有提及
+
+```
+
+```{r}
+output = map_df(list_norms, mean_and_sd) # output 以dataframe格式输出
+output = map_df(list_norms, mean_and_sd, .id = "input")   #put the abcd names into a column called "input"
+```
+
+## list columns
+
+```{r}
+listcol_df = 
+  tibble(
+    name = c("a", "b", "c", "d"),
+    samp = list_norms
+  )
+```
+
+
+```{r}
+listcol_df %>% pull(name)
+listcol_df %>% pull(samp)
+
+listcol_df %>% 
+  filter(name == "a")
+```
+
+Let's try some operation
+
+```{r}
+listcol_df$samp[[1]]
+
+mean_and_sd(listcol_df$samp[[1]])
+```
+
+Can i just map?
+
+```{r}
+map(listcol_df$samp, mean_and_sd)
+```
+
+So, can I add a list column???----yes
+
+```{r}
+listcol_df = 
+  listcol_df %>% 
+  mutate(summary = map(samp, mean_and_sd),
+         medians = map_dbl(samp, median))
+
+listcol_df
 ```
 

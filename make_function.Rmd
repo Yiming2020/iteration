@@ -7,6 +7,7 @@ output: github_document
 library(tidyverse)
 library(rvest)
 
+
 knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = .6,
@@ -153,5 +154,171 @@ sim_mean_sd(100, 6, 3)
 sim_mean_sd(miu = 6, sigma = 7, sample_size = 500) #miu = 6, sigma = 7 rewrite the default numbers
 sim_mean_sd(sample_size = 500)#因为default miu = 3, sigma = 4, 所以function can still work
 
+```
+
+
+Let's do the dynamite sample
+
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite_html = read_html(url)
+
+review_titles = 
+  dynamite_html %>%
+  html_nodes(".a-text-bold span") %>%
+  html_text()
+
+review_stars = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text() %>%
+  str_extract("^\\d") %>%
+  as.numeric()
+
+review_text = 
+  dynamite_html %>%
+  html_nodes(".review-text-content span") %>%
+  html_text() %>% 
+  str_replace_all("\n", "") %>% 
+  str_trim()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+
+reviews
+```
+
+
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+swm_html = read_html(url)
+```
+
+Grab elements that I want
+
+```{r}
+# use select gadget to determine what kind of movie title it use
+title_vec = 
+  swm_html %>% 
+  html_nodes(css = ".lister-item-header a") %>% ###".lister-item-header a"这个东西是用gadget 查出来的，每次都不不同
+  html_text()
+
+gross_rev_vec = 
+  swm_html %>% 
+  html_nodes(css = ".a-text-bold span") %>% 
+  html_text()
+
+runtime_vec = 
+  swm_html %>% 
+  html_nodes(css = ".runtime") %>% 
+  html_text()
+
+swm_df = 
+  tibble(
+    title = title_vec,
+    gross_rev = gross_rev_vec,
+    runtime = runtime_vec
+  )
+
+swm_df
+
+```
+
+## Let's review Napoleon Dynamite
+
+
+
+```{r, eval = FALSE}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+dynamite_html = read_html(url)
+review_titles = 
+  dynamite_html %>%
+  html_nodes(".a-text-bold span") %>%
+  html_text()
+review_stars = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text() %>%
+  str_extract("^\\d") %>%
+  as.numeric()
+review_text = 
+  dynamite_html %>%
+  html_nodes(".review-text-content span") %>%
+  html_text() %>% 
+  str_replace_all("\n", "") %>% 
+  str_trim()
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+```
+
+What about the next page of reviews...
+
+Let's turn that code into a function
+
+```{r}
+read_page_reviews = function(url) {
+  
+  html = read_html(url)
+  
+  review_titles = 
+    html %>%
+    html_nodes(".a-text-bold span") %>%
+    html_text()
+  
+  review_stars = 
+    html %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text()
+  
+  review_text = 
+    html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text() %>% 
+    str_replace_all("\n", "") %>% 
+    str_trim()
+  
+  reviews = 
+    tibble(
+      title = review_titles,
+      stars = review_stars,
+      text = review_text
+    )
+  
+  reviews
+  
+}
+```
+
+Let me try my function.
+
+```{r}
+dynamite_url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=2"
+read_page_reviews(dynamite_url)
+```
+
+Let's read a few pages of reviews. 
+
+```{r}
+dynamite_url_base = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber="
+dynamite_urls = str_c(dynamite_url_base, 1:50)
+
+all_reviews = 
+  bind_rows(
+    read_page_reviews(dynamite_urls[1]),
+    read_page_reviews(dynamite_urls[2]),
+    read_page_reviews(dynamite_urls[3]),
+    read_page_reviews(dynamite_urls[4]),
+    read_page_reviews(dynamite_urls[5])
+  )
+
+all_reviews
 ```
 

@@ -9,11 +9,11 @@ x_vec = rnorm(30, mean = 5, sd = 3)
 (x_vec - mean(x_vec)) / sd(x_vec)
 ```
 
-    ##  [1]  1.5402581 -0.5297896 -0.5767672 -0.8565913 -1.8446595  0.4618644
-    ##  [7] -0.5421714  0.2800615 -0.3288947  1.9488745 -0.2745493 -1.0430889
-    ## [13] -0.9344828 -0.1399383 -0.4694438 -1.3854395  0.9336195 -0.5832629
-    ## [19]  0.3206256  0.5071296  0.4556579 -1.8457539  1.7624344  1.0149519
-    ## [25]  0.9600225  0.1553747 -0.7077540  1.5067619 -0.1445186  0.3594691
+    ##  [1] -0.24370904  0.79035061 -0.49627317 -0.25526499 -0.93735463  0.67561844
+    ##  [7] -1.51516985 -0.97648625  0.24644333 -0.56876158 -1.76173401 -1.65718792
+    ## [13] -0.27808099 -0.71765784  0.78001454  1.79494853  0.18580966  0.20752559
+    ## [19] -1.11625962  1.87912235 -0.01171033 -0.79441254  0.72353309  1.86033973
+    ## [25]  0.31215512  0.37780571 -0.64511314  0.27772939  0.29053306  1.57324675
 
 I want a function to compute z-scores
 
@@ -37,11 +37,11 @@ z_scores = function(x) {
 z_scores(x_vec)
 ```
 
-    ##  [1]  1.5402581 -0.5297896 -0.5767672 -0.8565913 -1.8446595  0.4618644
-    ##  [7] -0.5421714  0.2800615 -0.3288947  1.9488745 -0.2745493 -1.0430889
-    ## [13] -0.9344828 -0.1399383 -0.4694438 -1.3854395  0.9336195 -0.5832629
-    ## [19]  0.3206256  0.5071296  0.4556579 -1.8457539  1.7624344  1.0149519
-    ## [25]  0.9600225  0.1553747 -0.7077540  1.5067619 -0.1445186  0.3594691
+    ##  [1] -0.24370904  0.79035061 -0.49627317 -0.25526499 -0.93735463  0.67561844
+    ##  [7] -1.51516985 -0.97648625  0.24644333 -0.56876158 -1.76173401 -1.65718792
+    ## [13] -0.27808099 -0.71765784  0.78001454  1.79494853  0.18580966  0.20752559
+    ## [19] -1.11625962  1.87912235 -0.01171033 -0.79441254  0.72353309  1.86033973
+    ## [25]  0.31215512  0.37780571 -0.64511314  0.27772939  0.29053306  1.57324675
 
 Try my function on some other things. These should give errors
 
@@ -125,7 +125,7 @@ mean_and_sd(x_vec)
     ## # A tibble: 1 x 2
     ##      mean    sd
     ##     <dbl> <dbl>
-    ## 1 -0.0373  1.00
+    ## 1 0.00359 0.983
 
 ## multiple inputs
 
@@ -145,7 +145,7 @@ sim_data %>%
     ## # A tibble: 1 x 2
     ##    mean    sd
     ##   <dbl> <dbl>
-    ## 1  4.55  2.71
+    ## 1  4.39  3.23
 
 I’d like to do this with function
 
@@ -170,7 +170,7 @@ sim_mean_sd(100, 6, 3)
     ## # A tibble: 1 x 2
     ##    mean    sd
     ##   <dbl> <dbl>
-    ## 1  6.29  2.77
+    ## 1  5.74  3.07
 
 ``` r
 sim_mean_sd(miu = 6, sigma = 7, sample_size = 500) #miu = 6, sigma = 7 rewrite the default numbers
@@ -179,7 +179,7 @@ sim_mean_sd(miu = 6, sigma = 7, sample_size = 500) #miu = 6, sigma = 7 rewrite t
     ## # A tibble: 1 x 2
     ##    mean    sd
     ##   <dbl> <dbl>
-    ## 1  5.80  7.04
+    ## 1  5.68  7.03
 
 ``` r
 sim_mean_sd(sample_size = 500)#因为default miu = 3, sigma = 4, 所以function can still work
@@ -188,7 +188,7 @@ sim_mean_sd(sample_size = 500)#因为default miu = 3, sigma = 4, 所以function 
     ## # A tibble: 1 x 2
     ##    mean    sd
     ##   <dbl> <dbl>
-    ## 1  3.19  3.90
+    ## 1  2.78  3.91
 
 Let’s do the dynamite sample
 
@@ -279,7 +279,7 @@ review_stars =
   dynamite_html %>%
   html_nodes("#cm_cr-review_list .review-rating") %>%
   html_text() %>%
-  str_extract("^\\d") %>%
+  str_extract("^\\d") %>% # "\\d" means first digit number between 0 to9, "^\\d" mean first digit at the begining of whatever the string is
   as.numeric()
 review_text = 
   dynamite_html %>%
@@ -361,15 +361,55 @@ all_reviews
 ```
 
     ## # A tibble: 10 x 3
-    ##    title                stars        text                                       
-    ##    <chr>                <chr>        <chr>                                      
-    ##  1 One big yawn         1.0 out of … Stupid movie.                              
-    ##  2 Vote for Pedro       5.0 out of … Good quality American format and my wife h…
-    ##  3 NAP-MITE             5.0 out of … I like this movie and recomend it.         
-    ##  4 Vote for Pedro!      5.0 out of … Just watch the movie. Gosh!                
-    ##  5 Just watch the frea… 5.0 out of … Its a great movie, gosh!!                  
-    ##  6 Great Value          5.0 out of … Great Value                                
-    ##  7 I LOVE THIS MOVIE    5.0 out of … THIS MOVIE IS SO FUNNY ONE OF MY FAVORITES 
-    ##  8 Don't you wish you … 5.0 out of … Watch it 100 times. Never. Gets. Old.      
-    ##  9 Stupid, but very fu… 5.0 out of … If you like stupidly funny '90s teenage mo…
-    ## 10 The beat             5.0 out of … The best
+    ##    title                            stars      text                             
+    ##    <chr>                            <chr>      <chr>                            
+    ##  1 Hilarious                        5.0 out o… "Super funny! Loved the online r…
+    ##  2 Love this movie                  5.0 out o… "We love this product.  It came …
+    ##  3 Boo                              1.0 out o… "We rented this movie because ou…
+    ##  4 Movie is still silly fun....ama… 1.0 out o… "We are getting really frustrate…
+    ##  5 Brilliant and awkwardly funny.   5.0 out o… "I've watched this movie repeate…
+    ##  6 Great purchase price for great … 5.0 out o… "Great movie and real good digit…
+    ##  7 Movie for memories               5.0 out o… "I've been looking for this movi…
+    ##  8 Love!                            5.0 out o… "Love this movie. Great quality" 
+    ##  9 Hilarious!                       5.0 out o… "Such a funny movie, definitely …
+    ## 10 napoleon dynamite                5.0 out o… "cool movie"
+
+## Mean scoping example
+
+``` r
+f = function(x) {
+  z = x + y
+  z
+}
+x = 1
+y = 2
+f(x = y) # this means take x = 2(y=2) inside the function
+```
+
+    ## [1] 4
+
+## Functions as arguments
+
+``` r
+my_summary = function(x, summ_func) {
+  
+  summ_func(x)
+  
+}
+x_vec = rnorm(100, 3, 7)
+mean(x_vec)
+```
+
+    ## [1] 3.313981
+
+``` r
+median(x_vec)
+```
+
+    ## [1] 3.185138
+
+``` r
+my_summary(x_vec, IQR)
+```
+
+    ## [1] 9.309237
